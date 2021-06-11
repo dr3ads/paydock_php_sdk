@@ -1,5 +1,5 @@
 {
-    "name": "paydock/paydock_php_sdk",
+    "name": "dr3ads/paydock_php_sdk",
     "description": "The PayDock PHP SDK provides a PHP friendly wrapper around the PayDock API.",
     "require": {
         "php": "^5.6 || ^7.0"
