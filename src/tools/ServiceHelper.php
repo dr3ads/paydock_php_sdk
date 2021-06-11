@@ -1,11 +1,8 @@
 <?php
-namespace Paydock\Sdk;
+namespace Paydock\Tools;
 
-require_once(__DIR__."/../Config.php");
-require_once(__DIR__."/../ResponseException.php");
-
-use Paydock\Sdk\config;
-use Paydock\Sdk\ResponseException;
+use Paydock\Config;
+use Paydock\ResponseException;
 
 /*
  * This file is part of the Paydock.Sdk package.

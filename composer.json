@@ -10,7 +10,10 @@
     "license": "MIT",
 	"autoload": {
         "psr-4": {
-            "Paydock\\Sdk\\" : "src/"
+            "Paydock\\": "src",
+            "Paydock\\Sdk\\" : "src/services",
+            "Paydock\\Tools\\" : "src/tools"
+
         }
 	}
 }

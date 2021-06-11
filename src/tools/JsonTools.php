@@ -1,5 +1,5 @@
 <?php
-namespace Paydock\Sdk;
+namespace Paydock\Tools;
 
 /*
  * This file is part of the Paydock.Sdk package.
@@ -25,4 +25,3 @@ final class JsonTools
         return $array;
     }
 }
-?>

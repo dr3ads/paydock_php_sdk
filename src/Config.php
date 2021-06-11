@@ -1,6 +1,6 @@
 <?php
-namespace Paydock\Sdk;
-require_once(__DIR__."/tools/JWTTools.php.php");
+
+namespace Paydock;
 
 use Paydock\Sdk\JWTTools;
 
@@ -12,6 +12,7 @@ use Paydock\Sdk\JWTTools;
  * For the full copyright and license information, please view
  * the LICENSE file which was distributed with this source code.
  */
+
 class Config
 {
     public static $environment;
@@ -21,9 +22,12 @@ class Config
     public static $url;
     public static $timeoutMilliseconds;
 
-    public static function initialise($environmentOrUrl, $secretKeyOrAccessToken, $publicKey, $timeoutMilliseconds = 60000)
-    {
-
+    public static function initialise(
+        $environmentOrUrl,
+        $secretKeyOrAccessToken,
+        $publicKey,
+        $timeoutMilliseconds = 60000
+    ) {
         // force lower case url
         $environmentOrUrl = strtolower($environmentOrUrl);
 
@@ -31,12 +35,14 @@ class Config
         if ($environmentOrUrl == "sandbox") {
             self::$url = "https://api-sandbox.paydock.com/v1/";
             self::$environment = "sandbox";
-        } else if ($environmentOrUrl == "production") {
-            self::$url = "https://api.paydock.com/v1/";
-            self::$environment = "production";
         } else {
-            self::$url = rtrim($environmentOrUrl,"/") . "/";
-            self::$environment = "other";
+            if ($environmentOrUrl == "production") {
+                self::$url = "https://api.paydock.com/v1/";
+                self::$environment = "production";
+            } else {
+                self::$url = rtrim($environmentOrUrl, "/")."/";
+                self::$environment = "other";
+            }
         }
 
         //test secret key or access token

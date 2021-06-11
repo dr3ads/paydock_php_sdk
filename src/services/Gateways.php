@@ -1,9 +1,10 @@
 <?php
+
 namespace Paydock\Sdk;
 
-require_once(__DIR__ . "/../tools/ServiceHelper.php");
-require_once(__DIR__."/../tools/JsonTools.php");
-require_once(__DIR__."/../tools/UrlTools.php");
+use Paydock\Tools\ServiceHelper;
+use Paydock\Tools\JsonTools;
+use Paydock\Tools\UrlTools;
 
 /*
  * This file is part of the Paydock.Sdk package.
@@ -13,16 +14,24 @@ require_once(__DIR__."/../tools/UrlTools.php");
  * For the full copyright and license information, please view
  * the LICENSE file which was distributed with this source code.
  */
+
 final class Gateways
 {
     private $parameters = array();
     private $action;
     private $gatewayId;
     private $actionMap = ["create" => "POST", "update" => "PUT", "delete" => "DELETE", "get" => "GET"];
-    
+
     public function create($type, $name, $username, $password, $merchant = "", $mode = "")
     {
-        $this->parameters = ["type" => $type, "name" => $name, "username" => $username, "password" => $password, "mode" => $mode, "merchant" => $merchant];
+        $this->parameters = [
+            "type" => $type,
+            "name" => $name,
+            "username" => $username,
+            "password" => $password,
+            "mode" => $mode,
+            "merchant" => $merchant
+        ];
         $this->action = "create";
         return $this;
     }
@@ -30,7 +39,14 @@ final class Gateways
     public function update($id, $type, $name, $username, $password, $merchant = "", $mode = "")
     {
         $this->gatewayId = $id;
-        $this->parameters = ["type" => $type, "name" => $name, "username" => $username, "password" => $password, "mode" => $mode, "merchant" => $merchant];
+        $this->parameters = [
+            "type" => $type,
+            "name" => $name,
+            "username" => $username,
+            "password" => $password,
+            "mode" => $mode,
+            "merchant" => $merchant
+        ];
         $this->action = "update";
         return $this;
     }
@@ -41,13 +57,13 @@ final class Gateways
         $this->action = "delete";
         return $this;
     }
-    
+
     public function get()
     {
         $this->action = "get";
         return $this;
     }
-    
+
     public function withId($id)
     {
         $this->gatewayId = $id;
@@ -68,11 +84,11 @@ final class Gateways
         switch ($this->action) {
             case "delete":
             case "update":
-                return "gateways/" . urlencode($this->gatewayId);
+                return "gateways/".urlencode($this->gatewayId);
             case "get":
-                return "gateways" . (empty($this->gatewayId) ? "" : "/" . urlencode($this->gatewayId));
+                return "gateways".(empty($this->gatewayId) ? "" : "/".urlencode($this->gatewayId));
         }
-        
+
         return "gateways";
     }
 
@@ -84,4 +100,3 @@ final class Gateways
         return ServiceHelper::privateApiCall($this->actionMap[$this->action], $url, $data);
     }
 }
-?>

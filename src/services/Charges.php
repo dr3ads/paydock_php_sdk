@@ -1,9 +1,10 @@
 <?php
+
 namespace Paydock\Sdk;
 
-require_once(__DIR__ . "/../tools/ServiceHelper.php");
-require_once(__DIR__."/../tools/JsonTools.php");
-require_once(__DIR__."/../tools/UrlTools.php");
+use Paydock\Tools\ServiceHelper;
+use Paydock\Tools\JsonTools;
+use Paydock\Tools\UrlTools;
 
 /*
  * This file is part of the Paydock.Sdk package.
@@ -13,6 +14,7 @@ require_once(__DIR__."/../tools/UrlTools.php");
  * For the full copyright and license information, please view
  * the LICENSE file which was distributed with this source code.
  */
+
 final class Charges
 {
     private $chargeData;
@@ -29,11 +31,23 @@ final class Charges
     private $captureAmount;
     private $transfer;
     private $capture;
-    private $actionMap = array("create" => "POST", "get" => "GET", "refund" => "POST", "archive" => "DELETE", "capture" => "POST", "cancelAuthorisation" => "DELETE",);
-    
+    private $actionMap = array(
+        "create" => "POST",
+        "get" => "GET",
+        "refund" => "POST",
+        "archive" => "DELETE",
+        "capture" => "POST",
+        "cancelAuthorisation" => "DELETE",
+    );
+
     public function create($amount, $currency, $description = "", $reference = "", $capture = true)
     {
-        $this->chargeData = ["amount" => $amount, "currency"=>$currency, "description"=>$description, "reference" => $reference];
+        $this->chargeData = [
+            "amount" => $amount,
+            "currency" => $currency,
+            "description" => $description,
+            "reference" => $reference
+        ];
         $this->capture = $capture;
         $this->action = "create";
         return $this;
@@ -62,13 +76,35 @@ final class Charges
 
     public function withCreditCard($gatewayId, $cardNumber, $expireYear, $expireMonth, $cardHolderName, $ccv)
     {
-        $this->paymentSourceData = ["gateway_id" => $gatewayId, "card_number" => $cardNumber, "expire_month" => $expireMonth, "expire_year" => $expireYear, "card_name" => $cardHolderName, "card_ccv" => $ccv];
+        $this->paymentSourceData = [
+            "gateway_id" => $gatewayId,
+            "card_number" => $cardNumber,
+            "expire_month" => $expireMonth,
+            "expire_year" => $expireYear,
+            "card_name" => $cardHolderName,
+            "card_ccv" => $ccv
+        ];
         return $this;
     }
-    
-    public function withBankAccount($gatewayId, $accountName, $accountBsb, $accountNumber, $accountHolderType = "", $accountBankName = "")
-    {
-        $this->paymentSourceData = ["gateway_id" => $gatewayId, "type" => "bank_account", "account_name" => $accountName, "account_bsb" => $accountBsb, "account_number" => $accountNumber, "account_holder_type" => $accountHolderType, "account_bank_name" => $accountBankName, "type" => "bsb"];
+
+    public function withBankAccount(
+        $gatewayId,
+        $accountName,
+        $accountBsb,
+        $accountNumber,
+        $accountHolderType = "",
+        $accountBankName = ""
+    ) {
+        $this->paymentSourceData = [
+            "gateway_id" => $gatewayId,
+            "type" => "bank_account",
+            "account_name" => $accountName,
+            "account_bsb" => $accountBsb,
+            "account_number" => $accountNumber,
+            "account_holder_type" => $accountHolderType,
+            "account_bank_name" => $accountBankName,
+            "type" => "bsb"
+        ];
         return $this;
     }
 
@@ -83,19 +119,37 @@ final class Charges
 
     public function includeCustomerDetails($firstName, $lastName, $email, $phone)
     {
-        $this->customerData += ["first_name" => $firstName, "last_name" => $lastName, "email" => $email, "phone" => $phone];
+        $this->customerData += [
+            "first_name" => $firstName,
+            "last_name" => $lastName,
+            "email" => $email,
+            "phone" => $phone
+        ];
         return $this;
     }
-    
+
     public function includeTransfer($stripeTransferGroup, $transferItems)
     {
         $this->transfer = ["stripe_transfer_group" => $stripeTransferGroup, "items" => $transferItems];
         return $this;
     }
 
-    public function includeAddress($addressLine1, $addressLine2, $addressState, $addressCountry, $addressCity, $addressPostcode)
-    {
-        $this->paymentSourceData += ["address_line1" => $addressLine1, "address_line2" => $addressLine2, "address_state" => $addressState, "address_country" => $addressCountry, "address_city" => $addressCity, "address_postcode" => $addressPostcode];
+    public function includeAddress(
+        $addressLine1,
+        $addressLine2,
+        $addressState,
+        $addressCountry,
+        $addressCity,
+        $addressPostcode
+    ) {
+        $this->paymentSourceData += [
+            "address_line1" => $addressLine1,
+            "address_line2" => $addressLine2,
+            "address_state" => $addressState,
+            "address_country" => $addressCountry,
+            "address_city" => $addressCity,
+            "address_postcode" => $addressPostcode
+        ];
         return $this;
     }
 
@@ -112,19 +166,21 @@ final class Charges
         }
 
         $arrayData = [
-            'amount'      => $this->chargeData["amount"],
-            'currency'    => $this->chargeData["currency"],
-            'reference'   => $this->chargeData["reference"],
-            'description'   => $this->chargeData["description"]
+            'amount' => $this->chargeData["amount"],
+            'currency' => $this->chargeData["currency"],
+            'reference' => $this->chargeData["reference"],
+            'description' => $this->chargeData["description"]
         ];
 
         if (!empty($this->token)) {
             $arrayData += ["token" => $this->token];
-        } else if (!empty($this->customerId)) {
-            $arrayData += ["customer_id" => $this->customerId];
-            $arrayData += ["payment_source_id" => $this->paymentSourceId];
+        } else {
+            if (!empty($this->customerId)) {
+                $arrayData += ["customer_id" => $this->customerId];
+                $arrayData += ["payment_source_id" => $this->paymentSourceId];
+            }
         }
-    
+
         if (!empty($this->customerData)) {
             $arrayData += ["customer" => $this->customerData];
         }
@@ -139,7 +195,7 @@ final class Charges
         if (!empty($this->meta)) {
             $arrayData += ["meta" => $this->meta];
         }
-        
+
         if (!empty($this->transfer)) {
             $arrayData += ["transfer" => $this->transfer];
         }
@@ -171,7 +227,7 @@ final class Charges
         $this->action = "get";
         return $this;
     }
-    
+
     public function refund($chargeId, $amount = null)
     {
         $this->action = "refund";
@@ -179,26 +235,26 @@ final class Charges
         $this->refundAmount = $amount;
         return $this;
     }
-    
+
     public function archive($chargeId)
     {
         $this->action = "archive";
         $this->chargeId = $chargeId;
         return $this;
     }
-    
+
     public function withChargeId($chargeId)
     {
         $this->chargeId = $chargeId;
         return $this;
     }
-    
+
     public function withParameters($filter)
     {
         $this->chargeFilter = $filter;
         return $this;
     }
-    
+
     private function buildJson()
     {
         switch ($this->action) {
@@ -218,16 +274,16 @@ final class Charges
         $urlTools = new UrlTools();
         switch ($this->action) {
             case "create":
-                return "charges" . ($this->capture ? "" : "?capture=false");
+                return "charges".($this->capture ? "" : "?capture=false");
             case "capture":
             case "cancelAuthorisation":
-                    return "charges/" . urlencode($this->chargeId) . "/capture";
+                return "charges/".urlencode($this->chargeId)."/capture";
             case "get":
                 return $urlTools->BuildQueryStringUrl("charges", $this->chargeId, $this->chargeFilter);
             case "refund":
-                return "charges/" . urlencode($this->chargeId) . "/refunds";
+                return "charges/".urlencode($this->chargeId)."/refunds";
             case "archive":
-                return "charges/" . urlencode($this->chargeId);
+                return "charges/".urlencode($this->chargeId);
         }
 
         return "charges";
@@ -241,4 +297,3 @@ final class Charges
         return ServiceHelper::privateApiCall($this->actionMap[$this->action], $url, $data);
     }
 }
-?>
