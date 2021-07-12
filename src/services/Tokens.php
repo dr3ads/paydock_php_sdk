@@ -5,6 +5,7 @@ namespace Paydock\Sdk;
 use Paydock\Tools\ServiceHelper;
 use Paydock\Tools\JsonTools;
 use Paydock\Tools\UrlTools;
+use Paydock\Config;
 
 /*
  * This file is part of the Paydock.Sdk package.
