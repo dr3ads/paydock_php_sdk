@@ -2,7 +2,7 @@
 
 namespace Paydock;
 
-use Paydock\Sdk\JWTTools;
+use Paydock\Tools\JWTTools;
 
 /*
  * This file is part of the Paydock.Sdk package.
