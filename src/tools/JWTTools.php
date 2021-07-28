@@ -13,7 +13,7 @@ namespace Paydock\Tools;
 
 final class JWTTools
 {
-    public function isJWTToken($input)
+    public static function isJWTToken($input)
     {
         return (count(explode('.', $input)) == 3);
     }
